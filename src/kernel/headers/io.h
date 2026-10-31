@@ -21,14 +21,16 @@ void clearScreen();
 #define KEYBOARD_DATA_ADDR    0x60
 #define KEYBOARD_STATUS_ADDR  0x64
 
-extern const char scancode_table[0x3B];
-
-extern const char scancode_table_shift[0x3B];
-
 //tries to read the KEYBOARD_DATA_ADDR after checking KEYBOARD_STATUS_ADDR and return the char
+//NOTICE: returns raw scancode
 unsigned char readkey();
 
-//function so that its more convenient to transfort scancode into chars
+//scancode set 1
+extern const char scancode_table[128];
+//extern const char scancode_table_shift[128];
+
+//convert a raw keyboard scancode to a char (ex 'a')
+//can return 0 if an invalid keypress has been detected
 unsigned char scancode_to_char(unsigned char in);
 
 #endif

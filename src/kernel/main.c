@@ -14,14 +14,18 @@ void MainKernel(void) {
         unsigned char key_pressed = readkey();
         unsigned int x_pos;
 
-        if (key_pressed == 0x01) {
-            break;
-        }
-
         if (key_pressed != 0) {
-            const unsigned char result = scancode_to_char(key_pressed);
+            unsigned char res = scancode_to_char(key_pressed);
+            //it returns 0 if error detected
+            if (res == 0) {
+                continue;
+            }
 
-            putc(x_pos, 2, result);
+            //scancode_table[key_pressed]
+            putc(x_pos, 3, res);
+            //putc(x_pos, 3, key_pressed);
+            //putc(x_pos, 3, res);
+            
             key_pressed = 0;
             x_pos++;
         }
