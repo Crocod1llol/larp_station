@@ -1,5 +1,5 @@
 //this file contains video and keyboard io
-//#include "headers/larpbool.h"
+#include "headers/larpbool.h"
 
 #define VGA_ADDR ((volatile unsigned char*)0xB8000)
 
@@ -40,6 +40,10 @@ void clearScreen() {
 #define KEYBOARD_DATA_ADDR    0x60
 #define KEYBOARD_STATUS_ADDR  0x64
 
+//if the shift key/caps lock is on
+bool shift = false;
+bool caps_lock = false;
+
 //scancode set 1
 //for 0x00 (which is invalid) it will print '!'
 const char scancode_table[128] = {
@@ -60,35 +64,40 @@ const char scancode_table[128] = {
     [0x30] = 'b', [0x31] = 'n', [0x32] = 'm',
     [0x33] = ',', [0x34] = '.', [0x35] = '/',
     [0x39] = ' ', /*space*/ [0x01] = '\033', //esc
-    [0x0E] = '\b', /*backsp)ce*/ [0x0F] = '\t',/*tab*/
+    [0x0E] = '\b', /*backspace*/ [0x0F] = '\t',/*tab*/
     [0x1C] = '\n' //enter
 
 };
-/*
- set 1
+
 const char scancode_table_shift[128] = {
-    [0x01] = '\033',
-    [0x02] = '!',    [0x03] = '@',    [0x04] = '#',    [0x05] = '$',
-    [0x06] = '%',    [0x07] = '^',    [0x08] = '&',    [0x09] = '*',
-    [0x0A] = '(',    [0x0B] = ')',    [0x0C] = '_',    [0x0D] = '+',
-    [0x0E] = '\b',
-    [0x0F] = '\t',
+    [0x02] = '!',
+    [0x03] = '@', [0x04] = '#', [0x05] = '$', [0x06] = '%',
+    [0x07] = '^', [0x08] = '&', [0x09] = '*',
+    [0x0A] = '(', [0x0B] = ')',
+    [0x0C] = '_', [0x0D] = '+',
 
-    [0x10] = 'Q',    [0x11] = 'W',    [0x12] = 'E',    [0x13] = 'R',
-    [0x14] = 'T',    [0x15] = 'Y',    [0x16] = 'U',    [0x17] = 'I',
-    [0x18] = 'O',    [0x19] = 'P',    [0x1A] = '{',    [0x1B] = '}',
-    [0x1C] = '\n',
+    [0x0E] = '\b', /* backspace */
+    [0x0F] = '\t', /* tab */
 
-    [0x1E] = 'A',    [0x1F] = 'S',    [0x20] = 'D',    [0x21] = 'F',
-    [0x22] = 'G',    [0x23] = 'H',    [0x24] = 'J',    [0x25] = 'K',
-    [0x26] = 'L',    [0x27] = ':',    [0x28] = '"',    [0x29] = '~',
-    [0x2B] = '|',
+    [0x10] = 'Q', [0x11] = 'W', [0x12] = 'E', [0x13] = 'R',
+    [0x14] = 'T', [0x15] = 'Y', [0x16] = 'U', [0x17] = 'I',
+    [0x18] = 'O', [0x19] = 'P',
+    [0x1A] = '{', [0x1B] = '}',
 
-    [0x2C] = 'Z',    [0x2D] = 'X',    [0x2E] = 'C',    [0x2F] = 'V',
-    [0x30] = 'B',    [0x31] = 'N',    [0x32] = 'M',    [0x33] = '<',
-    [0x34] = '>',    [0x35] = '?',    [0x39] = ' '
+    [0x1C] = '\n', /* enter */
+
+    [0x1E] = 'A', [0x1F] = 'S', [0x20] = 'D', [0x21] = 'F',
+    [0x22] = 'G', [0x23] = 'H', [0x24] = 'J', [0x25] = 'K',
+    [0x26] = 'L',
+    [0x27] = ':', [0x28] = '"',
+
+    [0x2C] = 'Z', [0x2D] = 'X', [0x2E] = 'C', [0x2F] = 'V',
+    [0x30] = 'B', [0x31] = 'N', [0x32] = 'M',
+    [0x33] = '<', [0x34] = '>', [0x35] = '?',
+
+    [0x39] = ' ', /* space */
+    [0x01] = '\033' /* escape */
 };
-*/
 
 //tries to read the KEYBOARD_DATA_ADDR after checking KEYBOARD_STATUS_ADDR and return the char
 //NOTICE: returns raw scancode
@@ -104,6 +113,31 @@ unsigned char readkey() {
     return 0;
 }
 
+//handles shfit and caps lock
+bool handleShift() {
+    //0x2A -> shift
+    //0x3A -> caps lock
+
+    //if shiftlock, then check if user pressed caps again
+    if (caps_lock) {
+
+        if (readkey() == 0x3A) {
+            caps_lock = false;
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    //shift
+    if (readkey() == 0x2A) {
+        shift = true;
+        return true;
+    } 
+
+    return false;
+}
+
 //convert a raw keyboard scancode to a char (ex 'a')
 //can return 0 if an invalid keypress has been detected
 unsigned char scancode_to_char(unsigned char in) {
@@ -114,5 +148,9 @@ unsigned char scancode_to_char(unsigned char in) {
         return 0;
     }
 
-    return scancode_table[in];
+    if (handleShift()) {
+        return scancode_table_shift[in];
+    } else {
+        return scancode_table[in];
+    }
 }
