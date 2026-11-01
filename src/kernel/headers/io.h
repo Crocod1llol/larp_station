@@ -24,8 +24,8 @@ void clearScreen();
 #define KEYBOARD_STATUS_ADDR  0x64
 
 //if the shift key/caps lock is on
-extern bool shift;
-extern bool caps_lock;
+extern volatile bool shift;
+extern volatile bool caps_lock;
 
 //tries to read the KEYBOARD_DATA_ADDR after checking KEYBOARD_STATUS_ADDR and return the char
 //NOTICE: returns raw scancode
@@ -40,6 +40,6 @@ extern const char scancode_table_shift[128];
 unsigned char scancode_to_char(unsigned char in);
 
 //handles shfit and caps lock
-bool handleShift();
+void handleShift(unsigned char in);
 
 #endif
