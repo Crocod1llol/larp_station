@@ -23,7 +23,7 @@ void putc(int x, int y, char c) {
 
     //put a char into the index and then increment index so we can also put color
     VGA_ADDR[index]     = c;      
-    VGA_ADDR[index + 1] = 0x02;   
+    VGA_ADDR[index + 1] = 0x02;   //green
 }
 
 //clears the screen
@@ -41,13 +41,14 @@ void clearScreen() {
 #define KEYBOARD_STATUS_ADDR  0x64
 
 //if the shift key/caps lock is on
-bool shift = false;
-bool caps_lock = false;
+//also its volatile because it can change at any time
+volatile bool shift = false;
+volatile bool caps_lock = false;
 
 //scancode set 1
 //for 0x00 (which is invalid) it will print '!'
 const char scancode_table[128] = {
-    [0x00] = '!',
+    //[0x00] = '\t', //error
     [0x02] = '1', [0x03] = '2', [0x04] = '3', [0x05] = '4',
     [0x06] = '5', [0x07] = '6', [0x08] = '7', [0x09] = '8',
     [0x0A] = '9', [0x0B] = '0',
@@ -70,6 +71,7 @@ const char scancode_table[128] = {
 };
 
 const char scancode_table_shift[128] = {
+    //[0x00] = '\\', //error
     [0x02] = '!',
     [0x03] = '@', [0x04] = '#', [0x05] = '$', [0x06] = '%',
     [0x07] = '^', [0x08] = '&', [0x09] = '*',
@@ -99,43 +101,51 @@ const char scancode_table_shift[128] = {
     [0x01] = '\033' /* escape */
 };
 
+//handles shfit and caps lock
+void handleShift(unsigned char in) {
+    //0x2A -> shift
+    //0xAA -> shift released
+    //0x3A -> caps lock
+
+    //check if caps lock has been turned on
+    if (!caps_lock && in == 0x3A) {
+        caps_lock = true;
+        return;
+    }
+
+    //shift
+    if (in == 0x2A && !shift) {
+        shift = true;
+        return;
+    //the first time in using an release scancode value
+    //no way dude
+    } else if (in == 0xAA && shift) {
+        shift = false;
+        return;
+    }
+
+    //if caps lock, then check if user pressed caps again
+    if (caps_lock && in == 0x3A) {
+        caps_lock = false;
+        return;
+    }
+}
+
 //tries to read the KEYBOARD_DATA_ADDR after checking KEYBOARD_STATUS_ADDR and return the char
-//NOTICE: returns raw scancode
+//NOTICE: returns raw scancode (which also includes key releases
 unsigned char readkey() {
 
     //check if the keyboard status port in bit 0 is true
     //we have to use & to check if its true cause it doesnt work otherwise
     if (inb(KEYBOARD_STATUS_ADDR) & 1) {
         //read the port and return
-        return inb(KEYBOARD_DATA_ADDR);
+        unsigned char output = inb(KEYBOARD_DATA_ADDR);
+        //check for shift/caps lock so the variables get turned on/off
+        handleShift(output);
+        return output;
     }
     //ret 0 if nothing has been pressed
     return 0;
-}
-
-//handles shfit and caps lock
-bool handleShift() {
-    //0x2A -> shift
-    //0x3A -> caps lock
-
-    //if shiftlock, then check if user pressed caps again
-    if (caps_lock) {
-
-        if (readkey() == 0x3A) {
-            caps_lock = false;
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    //shift
-    if (readkey() == 0x2A) {
-        shift = true;
-        return true;
-    } 
-
-    return false;
 }
 
 //convert a raw keyboard scancode to a char (ex 'a')
@@ -148,9 +158,9 @@ unsigned char scancode_to_char(unsigned char in) {
         return 0;
     }
 
-    if (handleShift()) {
-        return scancode_table_shift[in];
+    if (caps_lock || shift) {
+          return scancode_table_shift[in];
     } else {
-        return scancode_table[in];
+          return scancode_table[in];
     }
 }
