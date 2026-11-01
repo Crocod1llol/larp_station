@@ -79,7 +79,7 @@ _start:
     ;yay
 
     ;load the kernel that is in the disk
-    mov al, 1
+    mov al, 3 ;sectors
     mov ch, 0
     mov cl, 2
     mov dh, 0
@@ -89,13 +89,15 @@ _start:
     ;load the Global Descriptor Table
     lgdt [gdt_descriptor]
 
-    ;enable protection
-    mov eax, cr0
-    or eax, 0x1
-    mov cr0, eax
-
     ;disable interupt
     cli 
+    ;clear cpu direction flag
+    cld
+
+    ;enable protection
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
 
     jmp 0x08:0x8000
 
