@@ -26,6 +26,17 @@ void putc(int x, int y, char c) {
     VGA_ADDR[index + 1] = 0x02;   //green
 }
 
+//puts a string in a row/col screen
+void puts(int x, int y, const char s[]) {
+
+    unsigned int index = 0;
+    while (s[index] != '\0') {
+        putc(x, y, s[index]);
+        index++;
+        x++;
+    }
+}
+
 //clears the screen
 void clearScreen() {
 

@@ -15,6 +15,9 @@ unsigned char inb(unsigned short port);
 //puts a char is the row/col screen
 void putc(int x, int y, char c);
 
+//puts a string in a row/col screen
+void puts(int x, int y, const char s[]);
+
 //clears the screen
 void clearScreen();
 
