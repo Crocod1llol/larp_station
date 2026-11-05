@@ -1,6 +1,6 @@
 #include "headers/io.h"
 #include "../lib/headers/larpbool.h"
-//#include "headers/shell.h"
+#include "headers/shell.h"
 
 void MainKernel(void) {
 
@@ -29,7 +29,6 @@ void MainKernel(void) {
 
                 //erase last char from current_cmd
                 current_cmd[idx] = '\0';
-                //current_cmd[idx - 1] = '\0';
                 idx--;
 
                 x_pos--;
@@ -40,10 +39,8 @@ void MainKernel(void) {
             //0x1C = enter
             if (key_pressed == 0x1C) {
 
-                //TEMP:::
-                //will have shell handling func later
-                puts(0, y_pos+1, current_cmd);
-                //runBuiltin(current_cmd);
+                //for now it returns nothing
+                runBuiltin(current_cmd);
 
                 //erase current_cmd
                 //2048 is current_cmd's max char count
