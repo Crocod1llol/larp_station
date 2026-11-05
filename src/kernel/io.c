@@ -1,5 +1,5 @@
 //this file contains video and keyboard io
-#include "headers/larpbool.h"
+#include "../lib/headers/larpbool.h"
 
 #define VGA_ADDR ((volatile unsigned char*)0xB8000)
 

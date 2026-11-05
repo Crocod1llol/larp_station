@@ -1,5 +1,6 @@
 #include "headers/io.h"
-#include "headers/larpbool.h"
+#include "../lib/headers/larpbool.h"
+//#include "headers/shell.h"
 
 void MainKernel(void) {
 
@@ -42,6 +43,7 @@ void MainKernel(void) {
                 //TEMP:::
                 //will have shell handling func later
                 puts(0, y_pos+1, current_cmd);
+                //runBuiltin(current_cmd);
 
                 //erase current_cmd
                 //2048 is current_cmd's max char count
