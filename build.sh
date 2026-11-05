@@ -11,11 +11,15 @@ nasm src/boot.asm -f bin -o boot.bin
 nasm src/kernel/start.asm -f elf32 -o start_kernel.o
 gcc -m32 -Wall -Wextra -ffreestanding -fno-pie -fno-pic -fno-stack-protector -fno-builtin -Wl,--section-start=.text=0x8000 -c src/kernel/main.c -o kernel_main.o
 
-#LIB
+#OS essectials
 gcc -m32 -Wall -Wextra -ffreestanding -fno-pie -fno-pic -fno-stack-protector -fno-builtin -c src/kernel/io.c -o io.o
+gcc -m32 -Wall -Wextra -ffreestanding -fno-pie -fno-pic -fno-stack-protector -fno-builtin -c src/kernel/shell.c -o shell.o
+
+#stdlib implementation (soon) tm
+gcc -m32 -Wall -Wextra -ffreestanding -fno-pie -fno-pic -fno-stack-protector -fno-builtin -c src/lib/string.c -o string.o
 
 #link em using linker.ld config file
-ld -m elf_i386 -T linker.ld -o kernel.bin --oformat binary start_kernel.o kernel_main.o io.o
+ld -m elf_i386 -T linker.ld -o kernel.bin --oformat binary start_kernel.o kernel_main.o shell.o io.o string.o
 
 #now link the boot and the rest of the compiled binaries
 cat boot.bin kernel.bin > os.img
