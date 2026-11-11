@@ -7,8 +7,8 @@
 
 //declare globals that are useful for other c files
 //such as the text position in the terminal
-unsigned int x_pos;
-unsigned int y_pos; 
+unsigned int x_pos = 2;
+unsigned int y_pos = 2; 
 
 void MainKernel(void) {
 
@@ -24,9 +24,7 @@ void MainKernel(void) {
   //strcpy(hello, bye, 50);
 
   //puts(0, 6, bye);
-
-    x_pos = 2;
-    y_pos = 2;
+  
     while (true) {
 
         putc(0, y_pos, '$');
