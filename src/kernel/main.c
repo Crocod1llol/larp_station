@@ -1,8 +1,14 @@
 #include "headers/io.h"
 #include "headers/shell.h"
 #include "../lib/headers/larpbool.h"
-#include "../lib/headers/string.h"
+//#include "../lib/headers/string.h"
 //#include "../lib/headers/larpint.h"
+
+
+//declare globals that are useful for other c files
+//such as the text position in the terminal
+unsigned int x_pos;
+unsigned int y_pos; 
 
 void MainKernel(void) {
 
@@ -12,15 +18,15 @@ void MainKernel(void) {
     char current_cmd[2048];
     unsigned int idx = 0;
 
-    const char* hello = "whats up?";
-    char bye[50];
+  //const char* hello = "whats up?";
+  //char bye[50];
 
-    strcpy(hello, bye, 50);
+  //strcpy(hello, bye, 50);
 
-    puts(0, 6, bye);
+  //puts(0, 6, bye);
 
-    unsigned int x_pos = 2;
-    unsigned int y_pos = 3; //also known as line
+    x_pos = 2;
+    y_pos = 2;
     while (true) {
 
         putc(0, y_pos, '$');
@@ -38,6 +44,7 @@ void MainKernel(void) {
 
                 //erase last char from current_cmd
                 current_cmd[idx] = '\0';
+                current_cmd[idx - 1] = '\0';
                 idx--;
 
                 x_pos--;
@@ -48,33 +55,7 @@ void MainKernel(void) {
             //0x1C = enter
             if (key_pressed == 0x1C) {
 
-                //handle the results the builtin commands give
-                switch (runBuiltin(current_cmd)) {
-
-                    //success
-                    case 0: 
-                    break;
-
-                    //cmd not found
-                    case 1:
-                        //TODO:: somehow implement a way to explore more exes in the filesystem
-                        //oh boy
-                    break;
-
-                    //cmd failed
-                    case 2:
-                        //print error 
-                    break;
-
-                    //request for screen to be cleared
-                    case 3:
-                        x_pos = 0;
-                        y_pos = 0;
-                    break;
-
-                    default:
-                    break;
-                }
+                runBuiltin(current_cmd);
 
                 //erase current_cmd
                 //2048 is current_cmd's max char count
