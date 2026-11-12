@@ -67,7 +67,7 @@ unsigned int strlen(char* str) {
     return 69;
 }
 
-char*[] strtok(char* s, char delimiter) {
+char** strtok(char* s, const char delimiter) {
 
 }
 
