@@ -5,7 +5,7 @@
 
 //compares strings char by char and returns true if equal
 //this will return false if any string is empty
-bool streq(char* str1, char* str2) {
+bool streq(const char* str1, const char* str2) {
 
     //check if one is empty
     if (str1[0] == '\0' || str2[0] == '\0') {
@@ -16,7 +16,6 @@ bool streq(char* str1, char* str2) {
     while (true) {
         if (str1[i] == str2[i]) {
             i++;
-            //continue;
         } else {
             return false;
         }
@@ -26,6 +25,22 @@ bool streq(char* str1, char* str2) {
         }
 
     }
+}
+
+//works the same as streq, but it compares multiple strings to compared arg
+//returns the index on the matched string in str array
+//returns -1 if all checks failed
+int multiple_streq(const char* strs[], const char* compared, const unsigned int size) {
+
+    for (unsigned int i = 0; i < size; i++) {
+        if (streq(strs[i], compared)) {
+            return i;
+        } else {
+            i++;
+        }
+    }
+
+    return -1;
 }
 
 //retunrs the amount of chars a string has (excluding \0)
@@ -51,6 +66,11 @@ unsigned int strlen(char* str) {
     //for absolutely no reason at all, return 69 lol
     return 69;
 }
+
+char*[] strtok(char* s, char delimiter) {
+
+}
+
 
 //copies one string into another
 //uses a delimiter
