@@ -79,7 +79,7 @@ _start:
     ;yay
 
     ;load the kernel that is in the disk
-    mov al, 5 ;sectors
+    mov al, 6 ;sectors
     mov ch, 0
     mov cl, 2
     mov dh, 0
