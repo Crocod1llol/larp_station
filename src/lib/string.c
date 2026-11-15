@@ -1,6 +1,7 @@
 //string func yayyy
 
 #include "headers/larpbool.h"
+#include "../kernel/headers/main.h"
 //#include "headers/larpint.h"
 
 //compares strings char by char and returns true if equal
@@ -67,28 +68,69 @@ unsigned int strlen(char* str) {
     return 69;
 }
 
-char** strtok(char* s, const char delimiter) {
+//"returns" the delimited string in an array of strings in an param (dest)
+//i cant return char**, so ill use it as an param
+void strtok(char* str, char dest[][MAX_AGRS], const char delimiter) {
 
+    if (str[0] == '\0') {
+        return;
+    }
+
+    unsigned int count = 0; //total amount of chars
+    unsigned int last = 0; //how many characters until the last delimiter
+    unsigned int current_slot = 0; //current string slot in array
+    while (true) {
+
+        //copy the last token
+        if (str[count] == '\0') {
+
+            int current = 0;
+            for (unsigned int i = last; i < count; i++) {
+                //avoid delimiter being copied
+                if (str[i] == delimiter) { continue; }
+
+                dest[current_slot][current] = str[i];
+                current++;
+            }
+
+            break;
+        }
+
+        if (str[count] == delimiter) {
+
+            int current = 0;
+            for (unsigned int i = last; i < count; i++) {
+                //avoid delimiter being copied
+                if (str[i] == delimiter) { continue; }
+
+                dest[current_slot][current] = str[i];
+                current++;
+            }
+
+            dest[current_slot][current+1] = '\0';
+
+            last = count;           
+            current_slot++;
+        }
+        count++;
+    }
 }
-
 
 //copies one string into another
 //uses a delimiter
 //doesnt do anything if one string is empty or if count is 0
-void strcpy(const char* src, char* dest, unsigned int count) {
+void strcpy(const unsigned int count, const char* src, char *dest) {
 
     //check if one string is empty so we dont fuck up anything
-    if (src[0] == '\0' || dest[0] == '\0' || count == 0) {
+    if (src[0] == '\0' || count == 0) {
         return;
     }
 
     unsigned int c_count = 1; //char count, definately wont get confusing :troll:
-    while (c_count < count) {
-        if (src[count] == '\0' || dest[count] == '\0') {
-            return;
-        }
-
-        dest[count] = src[count];
-        count++;
-    }
+    while (c_count <= count) {
+        if (src[c_count] == '\0') {
+            return; 
+        } 
+        dest[c_count] = src[c_count]; c_count++; 
+    } 
 }

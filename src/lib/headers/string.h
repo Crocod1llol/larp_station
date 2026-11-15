@@ -1,6 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
+#define MAX_AGRS 64
+
 //compares strings char by char and returns true if equal
 //this will return false if any string is empty
 bool streq(const char* str1, const char* str2);
@@ -14,9 +16,14 @@ int multiple_streq(const char* strs[], const char* compared, const unsigned int 
 //returns 0 if string empty (useful for checking if str empty)
 unsigned int strlen(char* str);
 
+//"returns" the delimited string in an array of strings in an param (target)
+//i cant return char**, so ill use it as an param
+void strtok(char* str, char dest[][MAX_AGRS], const char delimiter);
+
 //copies one string into another
 //uses a delimiter
 //doesnt do anything if one string is empty or if count is 0
-void strcpy(const char* src, char* dest, unsigned int count);
+//void strcpy(const char* src, char* dest, unsigned int count);
+void strcpy(unsigned int count, const char* src, char *dest);
 
 #endif
