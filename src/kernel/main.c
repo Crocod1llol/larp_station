@@ -1,9 +1,11 @@
 #include "headers/io.h"
 #include "headers/shell.h"
 #include "../lib/headers/larpbool.h"
-//#include "../lib/headers/string.h"
+#include "../lib/headers/string.h"
 //#include "../lib/headers/larpint.h"
 
+#define MAX_ARGS 64
+#define MAX_CHAR_PER_ARG 2048
 
 //declare globals that are useful for other c files
 //such as the text position in the terminal
@@ -18,13 +20,6 @@ void MainKernel(void) {
     char current_cmd[2048];
     unsigned int idx = 0;
 
-  //const char* hello = "whats up?";
-  //char bye[50];
-
-  //strcpy(hello, bye, 50);
-
-  //puts(0, 6, bye);
-  
     while (true) {
 
         putc(0, y_pos, '$');
@@ -36,7 +31,6 @@ void MainKernel(void) {
 
             //0x0E = backspace
             if (key_pressed == 0x0E) {
-                //putc(x_pos - 2, y_pos, 0);
                 putc(x_pos - 1, y_pos, 0);
                 putc(x_pos, y_pos, 0);
 
@@ -53,7 +47,11 @@ void MainKernel(void) {
             //0x1C = enter
             if (key_pressed == 0x1C) {
 
-                runBuiltin(current_cmd);
+
+                char tok_cmd[MAX_CHAR_PER_ARG][MAX_ARGS];
+                strtok(current_cmd, tok_cmd, ' ');
+
+                runBuiltin(tok_cmd);
 
                 //erase current_cmd
                 //2048 is current_cmd's max char count
