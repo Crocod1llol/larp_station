@@ -4,9 +4,9 @@
 #include "headers/main.h"
 
 //executes a shell built-in command
-void runBuiltin(char* cmd) {
+void runBuiltin(char cmd[][MAX_ARGS]) {
     
-    switch (multiple_streq((const char*[]){"clear", "echo", "exit"}, cmd, 3)) {
+    switch (multiple_streq((const char*[]){"clear", "exit", "echo"}, cmd[0], 3)) {
 
         case -1:
             //TODO: will have programs on file system later
@@ -20,14 +20,15 @@ void runBuiltin(char* cmd) {
             y_pos = 0;
         break;
 
-        //echo
-        case 1:
-            print("ching");
-        break;
-
         //exit
-        case 2:
+        case 1:
             while (true) {}
         break;
+
+        //echo
+        case 2:
+            print(cmd[1]);
+        break;
+
     }
 }
