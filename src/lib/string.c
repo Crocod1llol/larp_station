@@ -36,9 +36,7 @@ int multiple_streq(const char* strs[], const char* compared, const unsigned int 
     for (unsigned int i = 0; i < size; i++) {
         if (streq(strs[i], compared)) {
             return i;
-        } else {
-            i++;
-        }
+        }    
     }
 
     return -1;
@@ -70,7 +68,7 @@ unsigned int strlen(char* str) {
 
 //"returns" the delimited string in an array of strings in an param (dest)
 //i cant return char**, so ill use it as an param
-void strtok(char* str, char dest[][MAX_AGRS], const char delimiter) {
+void strtok(char* str, char dest[][MAX_ARGS], const char delimiter) {
 
     if (str[0] == '\0') {
         return;
