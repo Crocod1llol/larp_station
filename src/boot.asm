@@ -31,6 +31,7 @@ printer_done:
 ;params: al (amount of sectors to read); ch (the target cylinder); 
 ;cl (the target sector); dh (the target head);
 ; dl (the target drive number)
+; bp (if failing a disk check should hand the sys (0 - false, 1 - true)
 ;
 ;ex of arguments
 ;mov al, 1                ; read one sector
@@ -38,23 +39,36 @@ printer_done:
 ;mov cl, 2                ; sector 2 (sector numbers start at 1)
 ;mov dh, 0                ; head 0
 ;mov dl, [boot_drive]  ; the drive number, its the one that is saved at boot
+;mov bp, 1 ;do not hang
 read_disk_sector:
 
     mov bx, 0x8000           ;destination
     mov ah, 0x02             ; the target func of int 0x13 to read sectors
 
     int 0x13
-    jc disk_error
+    
+    jc disk_error 
 
     ret
     
 disk_error:
+
+
     mov si, disk_err_msg
     call printer
+
+    ;check if user wnats to hang the sys or not
+    cmp bp, 1
+    je .done
+
     jmp halt
+
+.done:
+    ret
 
 halt:
     jmp halt
+
 
 _start: 
     ;data segments
@@ -79,12 +93,14 @@ _start:
     ;yay
 
     ;load the kernel that is in the disk
-    mov al, 6 ;sectors
+    mov al, 8 ;sectors
     mov ch, 0
     mov cl, 2
     mov dh, 0
     mov dl, [boot_drive]
+    mov bp, 1
     call read_disk_sector
+
 
     ;load the Global Descriptor Table
     lgdt [gdt_descriptor]
